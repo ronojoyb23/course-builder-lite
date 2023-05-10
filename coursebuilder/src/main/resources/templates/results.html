@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Builder Results</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        /* Header styles */
+        header {
+            background-image: url('https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aGVhZGVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3rem;
+        }
+
+        /* Main styles */
+        main {
+            padding: 2rem;
+            text-align: left; /* Align content to the left */
+        }
+
+        main h2 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        .box:nth-child(1) {
+            background-color: #f2f2cc; /* Light yellow */
+        }
+
+        .box:nth-child(2) {
+            background-color: #e6e6e6; /* Light gray */
+        }
+
+        .box:nth-child(3) {
+            background-color: #f9f9cc; /* Pale yellow */
+        }
+
+        .box {
+            border: 1px solid #ddd;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border-radius: 5px;
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <div class="header-container">
+        <h1>Course Builder Results</h1>
+        <nav>
+            <ul>
+                <li><a href="#" onclick="goBack()">Home</a></li>
+            </ul>
+        </nav>
+
+        <script>
+            function goBack() {
+                window.history.back();
+            }
+        </script>
+    </div>
+</header>
+<main>
+    <div class="container">
+        <div class="box">
+            <h2>Course Summary</h2>
+            <p th:text="${summary}"></p> <!-- Changed from "${courseSummary}" to "${summary}" -->
+        </div>
+
+
+        <!-- Multiple Choice Quiz box -->
+        <div class="box">
+            <h2>Multiple Choice Quiz</h2>
+            <ul>
+                <li th:each="question, questionIndex : ${quizQuestions}">
+                    <h4 th:text="${question.questionText}"></h4>
+                    <ol type="A">
+                        <li th:each="option, optionIndex : ${question.options}">
+                            <label>
+                                <input type="radio" th:name="'question-' + ${questionIndex.index}" th:value="${optionIndex.index}">
+                                <span th:text="${option}"></span>
+                            </label>
+                        </li>
+                    </ol>
+                </li>
+            </ul>
+        </div>
+
+        <div class="box">
+            <!-- Multiple Choice key takeaways box -->
+            <h2>Key Takeaways</h2>
+            <ul>
+                <li th:each="takeaway, index : ${keyTakeaways}">
+                    <p><span th:text="${index.count}"></span>. <span th:text="${takeaway.substring(takeaway.indexOf(':') + 2)}"></span></p>
+                </li>
+            </ul>
+        </div>
+
+</main>
+<footer>
+    <div class="footer-container">
+        <p>© 2023 | ronojoyb23@gmail.com | Toronto | Canada</p>
+    </div>
+</footer>
+</body>
+</html>

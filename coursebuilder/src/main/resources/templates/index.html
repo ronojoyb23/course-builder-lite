@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ronojoy Bhaumik Labs</title>
+    <style>
+        /* Global styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            margin: 0;
+        }
+
+        /* Header styles */
+        header {
+            background-image: url('https://images.unsplash.com/photo-1472289065668-ce650ac443d2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aGVhZGVyfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=700&q=60');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 3rem;
+        }
+
+        header p {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        /* Main styles */
+        main {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        main h2 {
+            margin-top: 0;
+            font-size: 2rem;
+        }
+
+        form {
+            margin-top: 2rem;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 0 auto;
+            font-size: 1.2rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: none;
+            background-color: #f1f1f1;
+            cursor: pointer;
+        }
+
+        button[type="submit"] {
+            display: block;
+            margin: 2rem auto 0;
+            font-size: 1.2rem;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            border: none;
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        /* Spinner styles */
+        .spinner-container {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin-top: 2rem;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Footer styles */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<header>
+    <div class="parallax"></div>
+    <div class="header-container">
+        <h1>Ronojoy Bhaumik Labs</h1>
+        <p>@ronojoyb23</p>
+    </div>
+</header>
+
+<main>
+    <h2>Course Builder</h2>
+    <p id="animated-text">Create a course effortlessly! Just upload your video, wait a minute, and voila! We'll generate a complete course with a summary, quiz questions, and key takeaways.</p>
+
+    <form method="POST" enctype="multipart/form-data" action="/upload">
+        <input type="file" name="file">
+        <button id="upload-button" type="submit">Upload Video</button>
+    </form>
+
+    <div id="spinner-container" class="spinner-container">
+        <div class="spinner"></div>
+        <p id="spinner-text">Creating course with AI...</p>
+    </div>
+</main>
+
+<footer>
+    <div class="footer-container">
+        <p>© 2023 | ronojoyb23@gmail.com | Toronto | Canada</p>
+    </div>
+</footer>
+
+<script>
+    // Animated text typing effect
+    const textElement = document.getElementById('animated-text');
+    const text = textElement.innerHTML;
+    textElement.innerHTML = '';
+
+    let i = 0;
+    const typingEffect = setInterval(() => {
+        textElement.innerHTML += text[i];
+        i++;
+        if (i >= text.length) {
+            clearInterval(typingEffect);
+        }
+    }, 50); // Adjust typing speed as needed
+
+    // Display spinner and submit the form asynchronously
+    document.getElementById("upload-form").addEventListener("submit", function(event) {
+        event.preventDefault(); // Prevent form submission
+
+        document.getElementById("upload-button").disabled = true;
+        document.getElementById("spinner-container").style.display = "flex";
+
+        // Send the form data asynchronously using Fetch API
+        const formData = new FormData(document.getElementById("upload-form"));
+        fetch("/upload", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    // If the response is successful, wait for the results.html page to be ready
+                    const waitForResults = setInterval(() => {
+                        fetch("/results") // Send a request to the results page
+                            .then(response => {
+                                if (response.ok) {
+                                    clearInterval(waitForResults); // Stop waiting for results.html
+                                    window.location.href = "results.html"; // Redirect to results.html
+                                }
+                            })
+                            .catch(error => {
+                                // Handle errors while waiting for results.html
+                                console.error("An error occurred while waiting for results.html:", error);
+                            });
+                    }, 1000); // Check every 1 second if results.html is ready (adjust as needed)
+                } else {
+                    // If there is an error, hide the spinner and display an error message
+                    document.getElementById("upload-button").disabled = false;
+                    document.getElementById("spinner-container").style.display = "none";
+                    alert("An error occurred. Please try again.");
+                }
+            })
+            .catch(error => {
+                // If there is a network error, hide the spinner and display an error message
+                document.getElementById("upload-button").disabled = false;
+                document.getElementById("spinner-container").style.display = "none";
+                alert("An error occurred. Please check your network connection and try again.");
+            });
+    });
+</script>
+
+
+</body>
+</html>
